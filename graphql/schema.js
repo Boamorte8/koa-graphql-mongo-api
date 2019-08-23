@@ -1,6 +1,7 @@
-const { GraphQLSchema, GraphQLObjectType, GraphQLString } = require('graphql');
+const { GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLList } = require('graphql');
 const gadgetGraphQLType =  require('./gadgetType');
 const Gadget = require('../models/gadget');
+const Mutations = require('./mutations');
 
 const RootQuery = new GraphQLObjectType({
   name: 'RootQueryType',
@@ -11,10 +12,18 @@ const RootQuery = new GraphQLObjectType({
       resolve(parent, args) {
         return Gadget.findById(args.id)
       }
+    },
+    gadgets: {
+      type: new GraphQLList(gadgetGraphQLType),
+      args: {},
+      resolve() {
+        return Gadget.find({})
+      }
     }
   }
 });
 
 module.exports = new GraphQLSchema({
-  query: RootQuery
+  query: RootQuery,
+  mutation: Mutations
 });
